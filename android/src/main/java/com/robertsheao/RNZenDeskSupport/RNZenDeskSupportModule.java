@@ -22,6 +22,8 @@ import com.zendesk.sdk.model.access.AnonymousIdentity;
 import com.zendesk.sdk.model.access.Identity;
 import com.zendesk.sdk.model.request.CustomField;
 import com.zendesk.sdk.network.impl.ZendeskConfig;
+import com.zendesk.sdk.feedback.BaseZendeskFeedbackConfiguration;
+import com.zendesk.sdk.feedback.ZendeskFeedbackConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -222,11 +224,25 @@ public class RNZenDeskSupportModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void callSupport(ReadableMap customFields) {
+  public void callSupport(ReadableMap options) {
+
+    ZendeskFeedbackConfiguration configuration = new BaseZendeskFeedbackConfiguration() {
+        @Override
+        public String getRequestSubject() {
+            return options.getString("subject");
+        }
+
+        @Override
+        public List<String> getTags() {
+            return Arrays.asList(options.getArray("tags"));
+        }
+    };
+
+    ZendeskConfig.INSTANCE.setContactConfiguration(configuration);
 
     List<CustomField> fields = new ArrayList<>();
 
-    for (Map.Entry<String, Object> next : customFields.toHashMap().entrySet())
+    for (Map.Entry<String, Object> next : options.getMap("customFields").toHashMap().entrySet())
       fields.add(new CustomField(Long.parseLong(next.getKey()), (String) next.getValue()));
 
     ZendeskConfig.INSTANCE.setCustomFields(fields);
