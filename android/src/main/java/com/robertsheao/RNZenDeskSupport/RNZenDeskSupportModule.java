@@ -30,32 +30,27 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-class FeedbackConfig extends BaseZendeskFeedbackConfiguration {
+import java.io.Serializable;
 
-    private ReadableMap options;
+class FeedbackConfig extends BaseZendeskFeedbackConfiguration implements Serializable {
 
-    public FeedbackConfig(ReadableMap options){
+    String subject = null;
+    List<String> tags = null;
+
+    public FeedbackConfig(String subject, List<String> tags){
       super();
-      this.options = options;
+      this.subject = subject;
+      this.tags = tags;
     }
 
     @Override
     public String getRequestSubject() {
-      if(!this.options.hasKey("subject"))
-        return null;
-      return this.options.getString("subject");
+      return this.subject;
     }
 
     @Override
     public List<String> getTags() {
-      if(!this.options.hasKey("tags"))
-        return null;
-      ReadableArray tagsArray = this.options.getArray("tags");
-      List<String> tags = new ArrayList(tagsArray.size());
-      for(int i = 0; i < tagsArray.size(); i++){
-        tags.add(tagsArray.getString(i));
-      }
-      return tags;
+      return this.tags;
     }
   }
 
@@ -254,9 +249,23 @@ public class RNZenDeskSupportModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void callSupport(ReadableMap options) {
+  public void callSupport(final ReadableMap options) {
 
-    ZendeskFeedbackConfiguration configuration = new FeedbackConfig(options);
+    String subject = null;
+    List<String> tags = null;
+
+    if(options.hasKey("subject"))
+      subject = options.getString("subject");
+
+    if(options.hasKey("tags")){
+      ReadableArray tagsArray = options.getArray("tags");
+      tags = new ArrayList(tagsArray.size());
+      for(int i = 0; i < tagsArray.size(); i++){
+        tags.add(tagsArray.getString(i));
+      }
+    }
+
+    ZendeskFeedbackConfiguration configuration = new FeedbackConfig(subject, tags);
 
     if(options.hasKey("customFields")){
       List<CustomField> fields = new ArrayList<>();
