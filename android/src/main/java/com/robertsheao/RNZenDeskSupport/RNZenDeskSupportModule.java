@@ -224,29 +224,39 @@ public class RNZenDeskSupportModule extends ReactContextBaseJavaModule {
     showLabelsWithOptions(labels, null);
   }
 
+  class FeedbackConfig extends BaseZendeskFeedbackConfiguration {
+
+    private ReadableMap options;
+
+    public FeedbackConfig(ReadableMap options){
+      super();
+      this.options = options;
+    }
+
+    @Override
+    public String getRequestSubject() {
+      if(!this.options.hasKey("subject"))
+        return null;
+      return this.options.getString("subject");
+    }
+
+    @Override
+    public List<String> getTags() {
+      if(!this.options.hasKey("tags"))
+        return null;
+      ReadableArray tagsArray = this.options.getArray("tags");
+      List<String> tags = new ArrayList(tagsArray.size());
+      for(int i = 0; i < tagsArray.size(); i++){
+        tags.add(tagsArray.getString(i));
+      }
+      return tags;
+    }
+  }
+
   @ReactMethod
-  public void callSupport(final ReadableMap options) {
+  public void callSupport(ReadableMap options) {
 
-    ZendeskFeedbackConfiguration configuration = new BaseZendeskFeedbackConfiguration() {
-        @Override
-        public String getRequestSubject() {
-          if(!options.hasKey("subject"))
-            return null;
-          return options.getString("subject");
-        }
-
-        @Override
-        public List<String> getTags() {
-          if(!options.hasKey("tags"))
-            return null;
-          ReadableArray tagsArray = options.getArray("tags");
-          List<String> tags = new ArrayList(tagsArray.size());
-          for(int i = 0; i < tagsArray.size(); i++){
-            tags.add(tagsArray.getString(i));
-          }
-          return tags;
-        }
-    };
+    ZendeskFeedbackConfiguration configuration = new FeedbackConfig(options);
 
     if(options.hasKey("customFields")){
       List<CustomField> fields = new ArrayList<>();
