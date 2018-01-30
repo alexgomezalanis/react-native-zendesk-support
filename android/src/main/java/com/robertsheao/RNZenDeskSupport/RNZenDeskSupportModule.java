@@ -30,6 +30,35 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+private class FeedbackConfig extends BaseZendeskFeedbackConfiguration {
+
+    private ReadableMap options;
+
+    public FeedbackConfig(ReadableMap options){
+      super();
+      this.options = options;
+    }
+
+    @Override
+    public String getRequestSubject() {
+      if(!this.options.hasKey("subject"))
+        return null;
+      return this.options.getString("subject");
+    }
+
+    @Override
+    public List<String> getTags() {
+      if(!this.options.hasKey("tags"))
+        return null;
+      ReadableArray tagsArray = this.options.getArray("tags");
+      List<String> tags = new ArrayList(tagsArray.size());
+      for(int i = 0; i < tagsArray.size(); i++){
+        tags.add(tagsArray.getString(i));
+      }
+      return tags;
+    }
+  }
+
 public class RNZenDeskSupportModule extends ReactContextBaseJavaModule {
   public RNZenDeskSupportModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -222,35 +251,6 @@ public class RNZenDeskSupportModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void showLabels(ReadableArray labels) {
     showLabelsWithOptions(labels, null);
-  }
-
-  class FeedbackConfig extends BaseZendeskFeedbackConfiguration {
-
-    private ReadableMap options;
-
-    public FeedbackConfig(ReadableMap options){
-      super();
-      this.options = options;
-    }
-
-    @Override
-    public String getRequestSubject() {
-      if(!this.options.hasKey("subject"))
-        return null;
-      return this.options.getString("subject");
-    }
-
-    @Override
-    public List<String> getTags() {
-      if(!this.options.hasKey("tags"))
-        return null;
-      ReadableArray tagsArray = this.options.getArray("tags");
-      List<String> tags = new ArrayList(tagsArray.size());
-      for(int i = 0; i < tagsArray.size(); i++){
-        tags.add(tagsArray.getString(i));
-      }
-      return tags;
-    }
   }
 
   @ReactMethod
