@@ -225,7 +225,7 @@ public class RNZenDeskSupportModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void callSupport(ReadableMap options) {
+  public void callSupport(final ReadableMap options) {
 
     ZendeskFeedbackConfiguration configuration = new BaseZendeskFeedbackConfiguration() {
         @Override
