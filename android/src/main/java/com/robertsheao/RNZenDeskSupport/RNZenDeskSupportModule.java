@@ -235,7 +235,7 @@ public class RNZenDeskSupportModule extends ReactContextBaseJavaModule {
 
         @Override
         public List<String> getTags() {
-            return Arrays.asList(options.getArray("tags").toArrayList());
+            return options.getArray("tags").toArrayList();
         }
     };
 
