@@ -238,7 +238,7 @@ public class RNZenDeskSupportModule extends ReactContextBaseJavaModule {
             ReadableArray tagsArray = options.getArray("tags");
             List<String> tags = new ArrayList(tagsArray.size());
             for(int i = 0; i < tagsArray.size(); i++){
-              tags.put(tagsArray.getString(i));
+              tags.add(tagsArray.getString(i));
             }
             return tags;
         }
