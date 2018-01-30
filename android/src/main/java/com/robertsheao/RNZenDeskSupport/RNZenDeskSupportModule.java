@@ -26,6 +26,7 @@ import com.zendesk.sdk.feedback.BaseZendeskFeedbackConfiguration;
 import com.zendesk.sdk.feedback.ZendeskFeedbackConfiguration;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -238,8 +239,6 @@ public class RNZenDeskSupportModule extends ReactContextBaseJavaModule {
         }
     };
 
-    ZendeskConfig.INSTANCE.setContactConfiguration(configuration);
-
     List<CustomField> fields = new ArrayList<>();
 
     for (Map.Entry<String, Object> next : options.getMap("customFields").toHashMap().entrySet())
@@ -252,7 +251,7 @@ public class RNZenDeskSupportModule extends ReactContextBaseJavaModule {
     if(activity != null){
         Intent callSupportIntent = new Intent(getReactApplicationContext(), ContactZendeskActivity.class);
         callSupportIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        getReactApplicationContext().startActivity(callSupportIntent);
+        getReactApplicationContext().startActivity(callSupportIntent, configuration);
     }
   }
 
