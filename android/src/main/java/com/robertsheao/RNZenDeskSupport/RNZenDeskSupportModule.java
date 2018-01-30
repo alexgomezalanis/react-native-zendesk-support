@@ -30,7 +30,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class FeedbackConfig extends BaseZendeskFeedbackConfiguration {
+class FeedbackConfig extends BaseZendeskFeedbackConfiguration {
 
     private ReadableMap options;
 
