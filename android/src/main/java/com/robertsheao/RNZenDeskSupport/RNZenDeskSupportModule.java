@@ -235,7 +235,7 @@ public class RNZenDeskSupportModule extends ReactContextBaseJavaModule {
 
         @Override
         public List<String> getTags() {
-            return Arrays.asList(options.getArray("tags"));
+            return Arrays.asList(options.getArray("tags").toArrayList());
         }
     };
 
@@ -251,7 +251,8 @@ public class RNZenDeskSupportModule extends ReactContextBaseJavaModule {
     if(activity != null){
         Intent callSupportIntent = new Intent(getReactApplicationContext(), ContactZendeskActivity.class);
         callSupportIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        getReactApplicationContext().startActivity(callSupportIntent, configuration);
+        callSupportIntent.putExtra(ContactZendeskActivity.EXTRA_CONTACT_CONFIGURATION, configuration);
+        getReactApplicationContext().startActivity(callSupportIntent);
     }
   }
 
