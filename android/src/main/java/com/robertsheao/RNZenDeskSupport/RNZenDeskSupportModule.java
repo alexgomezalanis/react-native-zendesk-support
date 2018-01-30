@@ -230,26 +230,32 @@ public class RNZenDeskSupportModule extends ReactContextBaseJavaModule {
     ZendeskFeedbackConfiguration configuration = new BaseZendeskFeedbackConfiguration() {
         @Override
         public String getRequestSubject() {
-            return options.getString("subject");
+          if(!options.hasKey("subject"))
+            return null;
+          return options.getString("subject");
         }
 
         @Override
         public List<String> getTags() {
-            ReadableArray tagsArray = options.getArray("tags");
-            List<String> tags = new ArrayList(tagsArray.size());
-            for(int i = 0; i < tagsArray.size(); i++){
-              tags.add(tagsArray.getString(i));
-            }
-            return tags;
+          if(!options.hasKey("tags"))
+            return null;
+          ReadableArray tagsArray = options.getArray("tags");
+          List<String> tags = new ArrayList(tagsArray.size());
+          for(int i = 0; i < tagsArray.size(); i++){
+            tags.add(tagsArray.getString(i));
+          }
+          return tags;
         }
     };
 
-    List<CustomField> fields = new ArrayList<>();
+    if(options.hasKey("customFields")){
+      List<CustomField> fields = new ArrayList<>();
 
-    for (Map.Entry<String, Object> next : options.getMap("customFields").toHashMap().entrySet())
-      fields.add(new CustomField(Long.parseLong(next.getKey()), (String) next.getValue()));
+      for (Map.Entry<String, Object> next : options.getMap("customFields").toHashMap().entrySet())
+        fields.add(new CustomField(Long.parseLong(next.getKey()), (String) next.getValue()));
 
-    ZendeskConfig.INSTANCE.setCustomFields(fields);
+      ZendeskConfig.INSTANCE.setCustomFields(fields);
+    }
 
     Activity activity = getCurrentActivity();
 
