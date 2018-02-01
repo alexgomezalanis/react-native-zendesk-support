@@ -22,10 +22,37 @@ import com.zendesk.sdk.model.access.AnonymousIdentity;
 import com.zendesk.sdk.model.access.Identity;
 import com.zendesk.sdk.model.request.CustomField;
 import com.zendesk.sdk.network.impl.ZendeskConfig;
+import com.zendesk.sdk.feedback.BaseZendeskFeedbackConfiguration;
+import com.zendesk.sdk.feedback.ZendeskFeedbackConfiguration;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
+import java.io.Serializable;
+
+class FeedbackConfig extends BaseZendeskFeedbackConfiguration implements Serializable {
+
+    String subject = null;
+    List<String> tags = null;
+
+    public FeedbackConfig(String subject, List<String> tags){
+      super();
+      this.subject = subject;
+      this.tags = tags;
+    }
+
+    @Override
+    public String getRequestSubject() {
+      return this.subject;
+    }
+
+    @Override
+    public List<String> getTags() {
+      return this.tags;
+    }
+  }
 
 public class RNZenDeskSupportModule extends ReactContextBaseJavaModule {
   public RNZenDeskSupportModule(ReactApplicationContext reactContext) {
@@ -222,20 +249,39 @@ public class RNZenDeskSupportModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void callSupport(ReadableMap customFields) {
+  public void callSupport(final ReadableMap options) {
 
-    List<CustomField> fields = new ArrayList<>();
+    String subject = null;
+    List<String> tags = null;
 
-    for (Map.Entry<String, Object> next : customFields.toHashMap().entrySet())
-      fields.add(new CustomField(Long.parseLong(next.getKey()), (String) next.getValue()));
+    if(options.hasKey("subject"))
+      subject = options.getString("subject");
 
-    ZendeskConfig.INSTANCE.setCustomFields(fields);
+    if(options.hasKey("tags")){
+      ReadableArray tagsArray = options.getArray("tags");
+      tags = new ArrayList(tagsArray.size());
+      for(int i = 0; i < tagsArray.size(); i++){
+        tags.add(tagsArray.getString(i));
+      }
+    }
+
+    ZendeskFeedbackConfiguration configuration = new FeedbackConfig(subject, tags);
+
+    if(options.hasKey("customFields")){
+      List<CustomField> fields = new ArrayList<>();
+
+      for (Map.Entry<String, Object> next : options.getMap("customFields").toHashMap().entrySet())
+        fields.add(new CustomField(Long.parseLong(next.getKey()), (String) next.getValue()));
+
+      ZendeskConfig.INSTANCE.setCustomFields(fields);
+    }
 
     Activity activity = getCurrentActivity();
 
     if(activity != null){
         Intent callSupportIntent = new Intent(getReactApplicationContext(), ContactZendeskActivity.class);
         callSupportIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        callSupportIntent.putExtra(ContactZendeskActivity.EXTRA_CONTACT_CONFIGURATION, configuration);
         getReactApplicationContext().startActivity(callSupportIntent);
     }
   }
