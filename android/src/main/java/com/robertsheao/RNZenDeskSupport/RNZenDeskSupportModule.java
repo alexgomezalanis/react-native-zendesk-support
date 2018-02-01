@@ -1,5 +1,6 @@
 /**
  * Created by Patrick O'Connor on 8/30/17.
+ * https://github.com/RobertSheaO/react-native-zendesk-support
  */
 
 package com.robertsheao.RNZenDeskSupport;
@@ -80,151 +81,48 @@ public class RNZenDeskSupportModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setupIdentity(ReadableMap identity) {
-    Identity zdIdentity = new AnonymousIdentity.Builder()
-      .withEmailIdentifier(identity.getString("customerEmail"))
-      .withNameIdentifier(identity.getString("customerName"))
-      .build();
+    public void setupIdentity(ReadableMap identity) {
+      AnonymousIdentity.Builder builder = new AnonymousIdentity.Builder();
 
-    ZendeskConfig.INSTANCE.setIdentity(zdIdentity);
-  }
+      if (identity != null && identity.hasKey("customerEmail")) {
+        builder.withEmailIdentifier(identity.getString("customerEmail"));
+      }
+
+      if (identity != null && identity.hasKey("customerName")) {
+        builder.withNameIdentifier(identity.getString("customerName"));
+      }
+
+      ZendeskConfig.INSTANCE.setIdentity(builder.build());
+    }
 
   @ReactMethod
   public void showHelpCenterWithOptions(ReadableMap options) {
-    Boolean showConversationsMenuButton = true;
-    Boolean articleVotingEnabled = true;
-    ContactUsButtonVisibility withContactUsButtonVisibility = ContactUsButtonVisibility.ARTICLE_LIST_AND_ARTICLE;
-    if (!(options == null || options.toHashMap().isEmpty())) {
-      if (options.hasKey("showConversationsMenuButton")) {
-        showConversationsMenuButton = options.getBoolean("showConversationsMenuButton");
-      }
-      if (options.hasKey("articleVotingEnabled")) {
-        articleVotingEnabled = options.getBoolean("articleVotingEnabled");
-      }
-      if (options.hasKey("withContactUsButtonVisibility")) {
-        switch(options.getString("withContactUsButtonVisibility")) {
-          case "OFF":
-            withContactUsButtonVisibility = ContactUsButtonVisibility.OFF;
-            break;
-          case "ARTICLE_LIST_ONLY":
-            withContactUsButtonVisibility = ContactUsButtonVisibility.ARTICLE_LIST_ONLY;
-            break;
-          case "ARTICLE_LIST_AND_ARTICLE":
-          default:
-            withContactUsButtonVisibility = ContactUsButtonVisibility.ARTICLE_LIST_AND_ARTICLE;
-        }
-      }
-    }
-    new SupportActivity
-      .Builder()
-      .withArticleVoting(articleVotingEnabled)
-      .withContactUsButtonVisibility(withContactUsButtonVisibility)
-      .showConversationsMenuButton(showConversationsMenuButton)
+    SupportActivityBuilder.create()
+      .withOptions(options)
       .show(getReactApplicationContext());
   }
 
   @ReactMethod
   public void showCategoriesWithOptions(ReadableArray categoryIds, ReadableMap options) {
-    Boolean showConversationsMenuButton = true;
-    Boolean articleVotingEnabled = true;
-    ContactUsButtonVisibility withContactUsButtonVisibility = ContactUsButtonVisibility.ARTICLE_LIST_AND_ARTICLE;
-    if (!(options == null || options.toHashMap().isEmpty())) {
-      if (options.hasKey("showConversationsMenuButton")) {
-        showConversationsMenuButton = options.getBoolean("showConversationsMenuButton");
-      }
-      if (options.hasKey("articleVotingEnabled")) {
-        articleVotingEnabled = options.getBoolean("articleVotingEnabled");
-      }
-      if (options.hasKey("withContactUsButtonVisibility")) {
-        switch(options.getString("withContactUsButtonVisibility")) {
-          case "OFF":
-            withContactUsButtonVisibility = ContactUsButtonVisibility.OFF;
-            break;
-          case "ARTICLE_LIST_ONLY":
-            withContactUsButtonVisibility = ContactUsButtonVisibility.ARTICLE_LIST_ONLY;
-            break;
-          case "ARTICLE_LIST_AND_ARTICLE":
-          default:
-            withContactUsButtonVisibility = ContactUsButtonVisibility.ARTICLE_LIST_AND_ARTICLE;
-        }
-      }
-    }
-    new SupportActivity
-      .Builder()
-      .withArticleVoting(articleVotingEnabled)
-      .withContactUsButtonVisibility(withContactUsButtonVisibility)
-      .showConversationsMenuButton(showConversationsMenuButton)
-      .withArticlesForCategoryIds(toLongArray(categoryIds.toArrayList()))
+    SupportActivityBuilder.create()
+      .withOptions(options)
+      .withArticlesForCategoryIds(categoryIds)
       .show(getReactApplicationContext());
   }
 
   @ReactMethod
   public void showSectionsWithOptions(ReadableArray sectionIds, ReadableMap options) {
-    Boolean showConversationsMenuButton = true;
-    Boolean articleVotingEnabled = true;
-    ContactUsButtonVisibility withContactUsButtonVisibility = ContactUsButtonVisibility.ARTICLE_LIST_AND_ARTICLE;
-    if (!(options == null || options.toHashMap().isEmpty())) {
-      if (options.hasKey("showConversationsMenuButton")) {
-        showConversationsMenuButton = options.getBoolean("showConversationsMenuButton");
-      }
-      if (options.hasKey("articleVotingEnabled")) {
-        articleVotingEnabled = options.getBoolean("articleVotingEnabled");
-      }
-      if (options.hasKey("withContactUsButtonVisibility")) {
-        switch(options.getString("withContactUsButtonVisibility")) {
-          case "OFF":
-            withContactUsButtonVisibility = ContactUsButtonVisibility.OFF;
-            break;
-          case "ARTICLE_LIST_ONLY":
-            withContactUsButtonVisibility = ContactUsButtonVisibility.ARTICLE_LIST_ONLY;
-            break;
-          case "ARTICLE_LIST_AND_ARTICLE":
-          default:
-            withContactUsButtonVisibility = ContactUsButtonVisibility.ARTICLE_LIST_AND_ARTICLE;
-        }
-      }
-    }
-    new SupportActivity
-      .Builder()
-      .withArticleVoting(articleVotingEnabled)
-      .withContactUsButtonVisibility(withContactUsButtonVisibility)
-      .showConversationsMenuButton(showConversationsMenuButton)
+    SupportActivityBuilder.create()
+      .withOptions(options)
+      .withArticlesForSectionIds(sectionIds)
       .show(getReactApplicationContext());
   }
 
   @ReactMethod
   public void showLabelsWithOptions(ReadableArray labels, ReadableMap options) {
-    Boolean showConversationsMenuButton = true;
-    Boolean articleVotingEnabled = true;
-    ContactUsButtonVisibility withContactUsButtonVisibility = ContactUsButtonVisibility.ARTICLE_LIST_AND_ARTICLE;
-    if (!(options == null || options.toHashMap().isEmpty())) {
-      if (options.hasKey("showConversationsMenuButton")) {
-        showConversationsMenuButton = options.getBoolean("showConversationsMenuButton");
-      }
-      if (options.hasKey("articleVotingEnabled")) {
-        articleVotingEnabled = options.getBoolean("articleVotingEnabled");
-      }
-      if (options.hasKey("withContactUsButtonVisibility")) {
-        switch(options.getString("withContactUsButtonVisibility")) {
-          case "OFF":
-            withContactUsButtonVisibility = ContactUsButtonVisibility.OFF;
-            break;
-          case "ARTICLE_LIST_ONLY":
-            withContactUsButtonVisibility = ContactUsButtonVisibility.ARTICLE_LIST_ONLY;
-            break;
-          case "ARTICLE_LIST_AND_ARTICLE":
-          default:
-            withContactUsButtonVisibility = ContactUsButtonVisibility.ARTICLE_LIST_AND_ARTICLE;
-        }
-      }
-    }
-    //noinspection SuspiciousToArrayCall
-    new SupportActivity
-      .Builder()
-      .withArticleVoting(articleVotingEnabled)
-      .withContactUsButtonVisibility(withContactUsButtonVisibility)
-      .showConversationsMenuButton(showConversationsMenuButton)
-      .withLabelNames(labels.toArrayList().toArray(new String[]{}))
+    SupportActivityBuilder.create()
+      .withOptions(options)
+      .withLabelNames(labels)
       .show(getReactApplicationContext());
   }
 

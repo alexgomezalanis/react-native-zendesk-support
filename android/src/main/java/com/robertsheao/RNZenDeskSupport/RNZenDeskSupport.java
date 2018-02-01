@@ -1,5 +1,6 @@
 /**
  * Created by Patrick O'Connor on 8/30/17.
+ * https://github.com/RobertSheaO/react-native-zendesk-support
  */
 
 package com.robertsheao.RNZenDeskSupport;
