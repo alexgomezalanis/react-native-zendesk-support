@@ -74,15 +74,7 @@ ZendeskSupport.setupIdentity(identity)
 
 ### Support Tickets
 
-#### File a ticket Android
-```js
-const customFields = {
-  customFieldId: 'Custom Field Value'
-}
-ZendeskSupport.callSupport(customFields)
-```
-
-#### File a ticket iOS
+#### File a ticket
 ```js
 const customFields = {
   customFieldId: 'Custom Field Value'
