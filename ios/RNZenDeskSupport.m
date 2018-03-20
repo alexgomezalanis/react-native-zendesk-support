@@ -17,7 +17,21 @@
 
 RCT_EXPORT_MODULE();
 
+- (void)submitRequestCompleted:(NSNotification*)notification {
+    [self sendEventWithName:@"submitRequestCompleted" body:notification];
+}
+
+- (NSArray<NSString *> *)supportedEvents
+{
+    return @[@"submitRequestCompleted"];
+}
+
 RCT_EXPORT_METHOD(initialize:(NSDictionary *)config){
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                         selector:@selector(submitRequestCompleted:)
+                                             name:ZDKAPI_RequestSubmissionSuccess
+                                           object:nil];
+    
     NSString *appId = [RCTConvert NSString:config[@"appId"]];
     NSString *zendeskUrl = [RCTConvert NSString:config[@"zendeskUrl"]];
     NSString *clientId = [RCTConvert NSString:config[@"clientId"]];
