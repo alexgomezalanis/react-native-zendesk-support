@@ -15,6 +15,8 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.BaseActivityEventListener;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.zendesk.sdk.feedback.ui.ContactZendeskActivity;
 import com.zendesk.sdk.requests.RequestActivity;
 import com.zendesk.sdk.support.SupportActivity;
@@ -25,6 +27,7 @@ import com.zendesk.sdk.model.request.CustomField;
 import com.zendesk.sdk.network.impl.ZendeskConfig;
 import com.zendesk.sdk.feedback.BaseZendeskFeedbackConfiguration;
 import com.zendesk.sdk.feedback.ZendeskFeedbackConfiguration;
+
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,8 +59,27 @@ class FeedbackConfig extends BaseZendeskFeedbackConfiguration implements Seriali
   }
 
 public class RNZenDeskSupportModule extends ReactContextBaseJavaModule {
-  public RNZenDeskSupportModule(ReactApplicationContext reactContext) {
+
+  private static final int REQUEST_CODE = 304869;
+
+  public RNZenDeskSupportModule(final ReactApplicationContext reactContext) {
     super(reactContext);
+    reactContext.addActivityEventListener(new BaseActivityEventListener() {
+      @Override
+      public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent intent) {
+        if (requestCode == REQUEST_CODE) {
+          if (resultCode == Activity.RESULT_CANCELED) {
+            reactContext
+              .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+              .emit("submitRequestCancelled", null);
+          } else if (resultCode == Activity.RESULT_OK) {
+            reactContext
+              .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+              .emit("submitRequestCompleted", null);
+          }
+        }
+      }
+    });
   }
 
   @Override
@@ -177,10 +199,9 @@ public class RNZenDeskSupportModule extends ReactContextBaseJavaModule {
     Activity activity = getCurrentActivity();
 
     if(activity != null){
-        Intent callSupportIntent = new Intent(getReactApplicationContext(), ContactZendeskActivity.class);
-        callSupportIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        Intent callSupportIntent = new Intent(activity, ContactZendeskActivity.class);
         callSupportIntent.putExtra(ContactZendeskActivity.EXTRA_CONTACT_CONFIGURATION, configuration);
-        getReactApplicationContext().startActivity(callSupportIntent);
+        activity.startActivityForResult(callSupportIntent, REQUEST_CODE, null);
     }
   }
 
