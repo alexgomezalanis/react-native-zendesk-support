@@ -60,7 +60,7 @@ class FeedbackConfig extends BaseZendeskFeedbackConfiguration implements Seriali
 
 public class RNZenDeskSupportModule extends ReactContextBaseJavaModule {
 
-  private static final int REQUEST_CODE = 304869;
+  private static final int REQUEST_CODE = 65535;
 
   public RNZenDeskSupportModule(final ReactApplicationContext reactContext) {
     super(reactContext);
